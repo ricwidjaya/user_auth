@@ -3,7 +3,7 @@ const express = require("express")
 const app = express()
 const port = process.env.PORT || 3000
 const exhbs = require("express-handlebars")
-const cookieParser = require("cookie-parser")
+const session = require("express-session")
 const userAuth = require("./user-authentication")
 
 // Set view engine to express handlebars
@@ -12,10 +12,19 @@ app.set("view engine", "hbs")
 
 app.use(express.static("public"))
 app.use(urlencoded({ extended: true }))
-app.use(cookieParser())
+app.use(
+  session({
+    secret: "I like Jasmine and it's a secret",
+    resave: false,
+    saveUninitialized: true
+  })
+)
 
 app.get("/", (req, res) => {
-  console.log(req.cookies)
+  if (req.session.login) {
+    return res.send(`<h1>You have logged in</h1>`)
+  }
+  console.log(req.session)
   res.render("index")
 })
 
@@ -25,7 +34,10 @@ app.post("/", (req, res) => {
 
   if (user) {
     if (userAuth.checkPassword(user, password)) {
-      res.cookie("login", "true")
+      req.session.login = true
+      console.log(req.sessionID)
+      user.sessionID = req.sessionID
+      console.log(user)
       res.send(`<h1>Hello, ${user.firstName}</h1>`)
     } else {
       res.send("Please Check Your Password.")
