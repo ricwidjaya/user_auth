@@ -3,6 +3,7 @@ const express = require("express")
 const app = express()
 const port = process.env.PORT || 3000
 const exhbs = require("express-handlebars")
+const cookieParser = require("cookie-parser")
 const userAuth = require("./user-authentication")
 
 // Set view engine to express handlebars
@@ -11,8 +12,10 @@ app.set("view engine", "hbs")
 
 app.use(express.static("public"))
 app.use(urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.get("/", (req, res) => {
+  console.log(req.cookies)
   res.render("index")
 })
 
