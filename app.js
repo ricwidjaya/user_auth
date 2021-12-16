@@ -22,6 +22,7 @@ app.post("/", (req, res) => {
 
   if (user) {
     if (userAuth.checkPassword(user, password)) {
+      res.cookie("login", "true")
       res.send(`<h1>Hello, ${user.firstName}</h1>`)
     } else {
       res.send("Please Check Your Password.")
